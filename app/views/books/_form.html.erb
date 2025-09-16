@@ -1,0 +1,44 @@
+<%= form_with(model: book, local: true) do |form| %>
+  <% if book.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(book.errors.count, "error") %> prohibited this book from being saved:</h4>
+      <ul>
+        <% book.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= form.label :title, "本のタイトル" %>
+    <%= form.text_field :title, class: 'form-control' %>
+  </div>
+
+   <div class="form-group">
+    <%= form.label :color_code, "本から感じた色" %>
+    <%= form.color_field :color_code, 
+     value: (book.color_code || "#ffffff"), 
+      id: "color_picker", 
+      onchange: "updateColorPreview()",
+    class: 'form-control' %>
+
+    <div id="color_display" style="margin-top: 10px;">
+      <input type="color" name="color" list="color-list"> 
+      <datalist id="color-list">
+        <option value="#ff0000">
+        <option value="#0000ff">
+        <option value="#ffff00">
+      </datalist>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :comment, "一言メモ" %>
+    <%= form.text_area :comment, rows: 1, class: 'form-control' %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit "📚 登録", class: 'btn btn-primary' %>
+  </div>
+<% end %>
+

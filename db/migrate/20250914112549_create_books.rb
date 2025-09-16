@@ -4,7 +4,6 @@ class CreateBooks < ActiveRecord::Migration[8.0]
       t.string :title
       t.string :color_code
       t.text :comment
-      t.string :impression
 
       t.timestamps
     end

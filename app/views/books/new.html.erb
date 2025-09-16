@@ -1,2 +1,9 @@
-<h1>Books#new</h1>
-<p>Find me in app/views/books/new.html.erb</p>
+<div class="container">
+  <h1>📚 新しい本を登録</h1>
+  
+  <%= render 'form', book: @book %>
+  
+  <div class="actions">
+    <%= link_to '📖 本の一覧に戻る', books_path, class: 'btn btn-secondary' %>
+  </div>
+</div>

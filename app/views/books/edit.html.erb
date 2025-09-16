@@ -1,2 +1,10 @@
-<h1>Books#edit</h1>
-<p>Find me in app/views/books/edit.html.erb</p>
+<div class="container">
+  <h1>📝 本の情報を編集</h1>
+  
+  <%= render 'form', book: @book %>
+  
+  <div class="actions">
+    <%= link_to '📖 詳細', @book, class: 'btn btn-info' %>
+    <%= link_to '📚 一覧', books_path, class: 'btn btn-secondary' %>
+  </div>
+</div>
