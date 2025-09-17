@@ -1,44 +1,88 @@
-<%= form_with(model: book, local: true) do |form| %>
-  <% if book.errors.any? %>
-    <div class="alert alert-danger">
-      <h4><%= pluralize(book.errors.count, "error") %> prohibited this book from being saved:</h4>
-      <ul>
-        <% book.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
+<div class="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8">
+  <%= form_with model: @book, local: true, class: "space-y-6" do |form| %>
+    
+    <!-- タイトル入力 -->
+    <div class="space-y-2">
+      <%= form.label :title, "書籍タイトル", class: "block text-sm font-medium text-gray-700" %>
+      <%= form.text_field :title, 
+          class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors",
+          placeholder: "読んだ本のタイトルを入力してください" %>
+    </div>
+
+    <!-- カラーピッカーセクション -->
+    <div class="space-y-4 p-6 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl border border-amber-200">
+      <h3 class="text-lg font-semibold text-amber-800 flex items-center gap-2">
+        🎨 この本から感じた色
+      </h3>
+      
+      <!-- プリセット色パレット -->
+      <div class="space-y-3">
+        <p class="text-sm text-gray-600">よく使われる読書の色から選ぶ</p>
+        <div class="grid grid-cols-4 sm:grid-cols-8 gap-3">
+          <% preset_colors = [
+            { code: '#ff6b6b', name: '情熱の赤' },
+            { code: '#ff8e53', name: '温かいオレンジ' },
+            { code: '#fdcb6e', name: '楽しい黄色' },
+            { code: '#4ecdc4', name: '癒しの水色' },
+            { code: '#95e1d3', name: '安らぎの緑' },
+            { code: '#74b9ff', name: '知性の青' },
+            { code: '#a29bfe', name: '思索の紫' },
+            { code: '#fd79a8', name: 'ロマンチックピンク' }
+          ] %>
+          <% preset_colors.each do |color| %>
+            <button type="button" 
+                    onclick="selectColor('<%= color[:code] %>')"
+                    class="w-12 h-12 rounded-lg border-2 border-gray-300 hover:border-amber-400 transition-all duration-200 hover:scale-110 shadow-sm"
+                    style="background-color: <%= color[:code] %>"
+                    title="<%= color[:name] %>">
+            </button>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- カスタム色選択 -->
+      <div class="space-y-3">
+        <p class="text-sm text-gray-600">または自由に色を選ぶ</p>
+        <div class="flex items-center gap-4">
+          <%= form.color_field :color_code, 
+              id: "color_picker",
+              class: "w-16 h-16 rounded-lg border-2 border-gray-300 cursor-pointer",
+              onchange: "updateColorPreview(this.value)" %>
+          
+          <div class="flex-1">
+            <%= form.text_field :color_code, 
+                id: "color_code_input",
+                class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors font-mono",
+                placeholder: "#000000",
+                pattern: "^#[0-9A-Fa-f]{6}$",
+                oninput: "updateColorPicker(this.value)" %>
+          </div>
+          
+          <!-- 色プレビュー -->
+          <div id="color_preview" 
+               class="w-16 h-16 rounded-lg border-2 border-gray-300 shadow-inner"
+               style="background-color: <%= @book.color_code || '#ffffff' %>">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 感想・メモ -->
+    <div class="space-y-2">
+      <%= form.label :notes, "読書メモ", class: "block text-sm font-medium text-gray-700" %>
+      <%= form.text_area :notes, 
+          class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors resize-none",
+          rows: 4,
+          placeholder: "この本の感想を１行程度で入力して下さい" %>
+    </div>
+
+    <!-- 送信ボタン -->
+    <div class="flex gap-4 pt-4">
+      <%= form.submit (@book.new_record? ? "本を登録する" : "更新する"), 
+          class: "flex-1 bg-amber-600 hover:bg-amber-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg" %>
+      
+      <%= link_to "キャンセル", root_path, 
+          class: "flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-6 rounded-lg transition-colors duration-200 text-center" %>
     </div>
   <% end %>
-
-  <div class="form-group">
-    <%= form.label :title, "本のタイトル" %>
-    <%= form.text_field :title, class: 'form-control' %>
-  </div>
-
-   <div class="form-group">
-    <%= form.label :color_code, "本から感じた色" %>
-    <%= form.color_field :color_code, 
-     value: (book.color_code || "#ffffff"), 
-      id: "color_picker", 
-      onchange: "updateColorPreview()",
-    class: 'form-control' %>
-
-    <div id="color_display" style="margin-top: 10px;">
-      <input type="color" name="color" list="color-list"> 
-      <datalist id="color-list">
-        <option value="#ff0000">
-        <option value="#0000ff">
-        <option value="#ffff00">
-      </datalist>
-  </div>
-
-  <div class="form-group">
-    <%= form.label :comment, "一言メモ" %>
-    <%= form.text_area :comment, rows: 1, class: 'form-control' %>
-  </div>
-
-  <div class="actions">
-    <%= form.submit "📚 登録", class: 'btn btn-primary' %>
-  </div>
-<% end %>
-
+</div>
