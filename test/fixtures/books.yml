@@ -4,10 +4,8 @@ one:
   title: MyString
   color_code: MyString
   comment: MyText
-  impression: MyString
 
 two:
   title: MyString
   color_code: MyString
   comment: MyText
-  impression: MyString
